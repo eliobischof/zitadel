@@ -27,17 +27,23 @@ jobs:
     needs:
       - version
     steps:
-    - id: get_release
+    - name: Get Draft Release
+      id: get_release
       uses: cardinalby/git-get-release-action@v1
       with:
         commitSha: ${{ github.sha }}
         draft: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - id: publish_release
-      run: |
-        curl -L -X PATCH \
-        -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-        -H "Accept: application/vnd.github+json" \
-        ${{ steps.get_release.outputs.url }} \
-        -d '{"draft": false, "make_latest": "legacy"}'
+    - name: Publish Release
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          github.rest.repos.updateRelease({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            release_id: ${{ steps.get_release.outputs.id }},
+            draft: false,
+            make_latest: "legacy"
+          });
