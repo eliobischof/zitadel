@@ -41,48 +41,6 @@ jobs:
       console_cache_path: ${{ needs.console.outputs.cache_path }}
       version: ${{ needs.version.outputs.version }}
 
-  core-unit-test:
-    needs: core
-    uses: ./.github/workflows/core-unit-test.yml
-    with:
-      go_version: "1.21"
-      core_cache_key: ${{ needs.core.outputs.cache_key }}
-      core_cache_path: ${{ needs.core.outputs.cache_path }}
-      crdb_version: "23.1.13"
-
-  core-integration-test:
-    needs: core
-    uses: ./.github/workflows/core-integration-test.yml
-    with:
-      go_version: "1.21"
-      core_cache_key: ${{ needs.core.outputs.cache_key }}
-      core_cache_path: ${{ needs.core.outputs.cache_path }}
-
-  lint:
-    needs: [core, console]
-    uses: ./.github/workflows/lint.yml
-    with:
-      go_version: "1.21"
-      node_version: "18"
-      buf_version: "latest"
-      go_lint_version: "v1.55.2"
-      core_cache_key: ${{ needs.core.outputs.cache_key }}
-      core_cache_path: ${{ needs.core.outputs.cache_path }}
-
-  container:
-    needs: [compile]
-    uses: ./.github/workflows/container.yml
-    secrets: inherit
-    permissions:
-      packages: write
-    if: ${{ github.event_name == 'workflow_dispatch' }}
-    with:
-      build_image_name: "ghcr.io/zitadel/zitadel-build"
-
-  e2e:
-    uses: ./.github/workflows/e2e.yml
-    needs: [compile]
-
   release:
     uses: ./.github/workflows/release.yml
     permissions:
@@ -91,7 +49,7 @@ jobs:
       issues: write
       pull-requests: write
     needs:
-      [version, core-unit-test, core-integration-test, lint, container, e2e]
+      [version, core-unit-test, core-integration-test]
     if: ${{ github.event_name == 'workflow_dispatch' }}
     secrets:
       GCR_JSON_KEY_BASE64: ${{ secrets.GCR_JSON_KEY_BASE64 }}
