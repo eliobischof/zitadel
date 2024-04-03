@@ -23,7 +23,6 @@ jobs:
     outputs:
       version: ${{ steps.output.outputs.VERSION }}
       published: ${{ steps.semantic.outputs.new_release_published }}
-      new_release_url: ${{ steps.semantic.outputs.new_release_url }}
     steps:
     -
       name: Source checkout
