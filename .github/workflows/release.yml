@@ -22,22 +22,22 @@ jobs:
     with:
       semantic_version: ${{ inputs.semantic_version }}
       dry_run: false
-
   publish:
     runs-on: ubuntu-latest
     needs:
       - version
     steps:
-    - name: publish latest release
+    - id: get_release
+      uses: cardinalby/git-get-release-action@v1
+      with:
+        commitSha: ${{ github.sha }}
+        draft: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - id: publish_release
       run: |
-        RELEASE_URL=$(
-          curl -sL \
-            -H "Accept: application/vnd.github+json" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/eliobischof/zitadel/releases/tags/${{ needs.version.outputs.version }} | \
-            jq -r '.url')
         curl -L -X PATCH \
-          -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-          -H "Accept: application/vnd.github+json" \
-          "${RELEASE_URL}" \
-          -d '{"make_latest": "legacy"}'
+        -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+        -H "Accept: application/vnd.github+json" \
+        ${{ steps.get_release.outputs.url }} \
+        -d '{"draft": false, "make_latest": "legacy"}'
