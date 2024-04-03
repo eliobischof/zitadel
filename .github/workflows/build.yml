@@ -18,8 +18,6 @@ jobs:
       contents: write
       issues: write
       pull-requests: write
-    needs:
-      - version
     if: ${{ github.event_name == 'workflow_dispatch' }}
     with:
       build_image_name: ${{ needs.container.outputs.build_image }}
