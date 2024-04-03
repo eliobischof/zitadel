@@ -32,6 +32,10 @@ jobs:
       with:
         tag: ${{ needs.version.outputs.version }}
         draft: true
-    - uses: eregon/publish-release@v1
-      with:
-        release_id: ${{ steps.get_release.outputs.id }}
+    - id: publish_release
+      run: |
+        curl -L -X PATCH \
+        -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+        -H "Accept: application/vnd.github+json" \
+        ${{ steps.create_release.outputs.url }} \
+        -d '{"make_latest": "legacy"}'
