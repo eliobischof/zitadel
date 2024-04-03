@@ -30,7 +30,7 @@ jobs:
     - id: get_release
       uses: cardinalby/git-get-release-action@v1
       with:
-        tag: ${{ needs.version.outputs.version }}
+        commitSha: ${{ github.sha }}
         draft: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
