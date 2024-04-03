@@ -14,7 +14,7 @@ jobs:
   version:
     uses: ./.github/workflows/version.yml
     with:
-      semantic_version: "19.0.2"
+      semantic_version: "23.0.7"
       dry_run: true
 
   release:
