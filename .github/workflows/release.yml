@@ -33,5 +33,5 @@ jobs:
         curl -X PATCH \
           -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
           -H "Accept: application/vnd.github+json" \
-          needs.version.outputs.new_release_url \
+          "${{ needs.version.outputs.new_release_url }}" \
           -d '{"make_latest": "legacy"}'
