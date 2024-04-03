@@ -11,35 +11,11 @@ permissions:
   pull-requests: write
 
 jobs:
-  core:
-    uses: ./.github/workflows/core.yml
-    with:
-      node_version: "20"
-      buf_version: "latest"
-      go_version: "1.21"
-
-  console:
-    uses: ./.github/workflows/console.yml
-    with:
-      node_version: "20"
-      buf_version: "latest"
-
   version:
     uses: ./.github/workflows/version.yml
     with:
       semantic_version: "19.0.2"
       dry_run: true
-
-  compile:
-    needs: [core, console, version]
-    uses: ./.github/workflows/compile.yml
-    with:
-      go_version: "1.21"
-      core_cache_key: ${{ needs.core.outputs.cache_key }}
-      console_cache_key: ${{ needs.console.outputs.cache_key }}
-      core_cache_path: ${{ needs.core.outputs.cache_path }}
-      console_cache_path: ${{ needs.console.outputs.cache_path }}
-      version: ${{ needs.version.outputs.version }}
 
   release:
     uses: ./.github/workflows/release.yml
@@ -49,10 +25,8 @@ jobs:
       issues: write
       pull-requests: write
     needs:
-      [version, compile]
+      [version]
     if: ${{ github.event_name == 'workflow_dispatch' }}
-    secrets:
-      GCR_JSON_KEY_BASE64: ${{ secrets.GCR_JSON_KEY_BASE64 }}
     with:
       build_image_name: ${{ needs.container.outputs.build_image }}
       semantic_version: "19.0.2"
